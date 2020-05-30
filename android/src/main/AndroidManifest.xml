@@ -1,6 +1,23 @@
-
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="top.cpming.rn.push.vivo">
+    package="top.cpming.rn.push.vivo">
 
+    <application>
+        <service
+            android:name="com.vivo.push.sdk.service.CommandClientService"
+            android:exported="true" />
+        <activity
+            android:name="com.vivo.push.sdk.LinkProxyClientActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <!-- push应用定义消息receiver声明 -->
+        <receiver android:name=".PushMessageReceiverImpl">
+            <intent-filter>
+                <!-- 接收push消息 -->
+                <action android:name="com.vivo.pushclient.action.RECEIVE" />
+            </intent-filter>
+        </receiver>
+    </application>
 </manifest>
   
