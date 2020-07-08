@@ -109,7 +109,7 @@ export default class App extends Component {
     }
 
     _checkManifest() {
-        VivoPush.checkManifest().then(data => {
+        VivoPush.checkManifest().then(() => {
             this.showLog("AndroidManifest.xml 配置正确");
         }).catch(error => {
             this.showLog(error.message);
