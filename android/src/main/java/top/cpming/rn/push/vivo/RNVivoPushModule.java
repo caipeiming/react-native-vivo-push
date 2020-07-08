@@ -1,12 +1,19 @@
 
 package top.cpming.rn.push.vivo;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -32,10 +39,45 @@ public class RNVivoPushModule extends ReactContextBaseJavaModule {
     public final static int VT_UN_BIND_ALIAS = 5;
     public final static int VT_SET_TOPIC = 6;
     public final static int VT_DEL_TOPIC = 7;
+    public final static int VT_MSG_CLICKED = 8;
 
     public RNVivoPushModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
+
+        final BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Bundle bundle = intent.getExtras();
+                WritableMap params = Arguments.fromBundle(bundle);
+                sendEvent(params);
+            }
+        };
+
+        final LocalBroadcastManager mgr = LocalBroadcastManager.getInstance(reactContext);
+        LifecycleEventListener listener = new LifecycleEventListener() {
+            public void onHostResume() {
+                Log.e(TAG, "onHostResume");
+                mgr.registerReceiver(receiver, new IntentFilter("vivo_push"));
+            }
+            public void onHostPause() {
+                Log.e(TAG, "onHostPause");
+                try {
+                    mgr.unregisterReceiver(receiver);
+                } catch (java.lang.IllegalArgumentException e) {
+                    Log.e(TAG, "receiver not registered", e);
+                }
+            }
+            public void onHostDestroy() {
+                Log.e(TAG, "onHostDestroy");
+                try {
+                    mgr.unregisterReceiver(receiver);
+                } catch (java.lang.IllegalArgumentException e) {
+                    Log.e(TAG, "receiver not registered", e);
+                }
+            }
+        };
+        reactContext.addLifecycleEventListener(listener);
     }
 
     @Override
@@ -99,6 +141,10 @@ public class RNVivoPushModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getRegId(Promise promise) {
         String regId = PushClient.getInstance(this.reactContext).getRegId();
+        if (regId == null || regId.isEmpty()){
+            promise.reject("1", "获取 regId 失败");
+            return;
+        }
         promise.resolve(regId);
     }
 
@@ -141,6 +187,10 @@ public class RNVivoPushModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getAlias(Promise promise) {
         String alias = PushClient.getInstance(this.reactContext).getAlias();
+        if (alias == null || alias.isEmpty()) {
+            promise.reject("1", "没有别名");
+            return;
+        }
         promise.resolve(alias);
     }
 
@@ -206,12 +256,14 @@ public class RNVivoPushModule extends ReactContextBaseJavaModule {
     @Override
     public Map<String, Object> getConstants() {
         final Map<String, Object> constants = new HashMap<>();
+        constants.put("VT_RECEIVE_REG_ID", VT_RECEIVE_REG_ID);
         constants.put("VT_TURN_ON_PUSH", VT_TURN_ON_PUSH);
         constants.put("VT_TURN_OFF_PUSH", VT_TURN_OFF_PUSH);
         constants.put("VT_BIND_ALIAS", VT_BIND_ALIAS);
         constants.put("VT_UN_BIND_ALIAS", VT_UN_BIND_ALIAS);
         constants.put("VT_SET_TOPIC", VT_SET_TOPIC);
         constants.put("VT_DEL_TOPIC", VT_DEL_TOPIC);
+        constants.put("VT_MSG_CLICKED", VT_MSG_CLICKED);
         return constants;
     }
 }

@@ -13,10 +13,6 @@ class Api {
             VivoPushEmitter.emit('Vivo_Push_Response', data);
         });
 
-        VivoPushModule.init();
-    }
-
-    initialize() {
         VivoPushModule.initialize();
     }
 

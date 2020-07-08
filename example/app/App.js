@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
-import {SafeAreaView, StyleSheet, FlatList, View, Text, Platform, TouchableHighlight, StatusBar} from 'react-native';
-import {VivoPush, VivoPushEmitter} from 'react-native-vivo-push';
+import {SafeAreaView, StyleSheet, FlatList, View, Text, Platform, TouchableHighlight, StatusBar, ToastAndroid} from 'react-native';
+import {VivoPush, VivoPushEmitter, VT_RECEIVE_REG_ID, VT_TURN_ON_PUSH, VT_TURN_OFF_PUSH, VT_BIND_ALIAS, VT_UN_BIND_ALIAS, VT_SET_TOPIC, VT_DEL_TOPIC, VT_MSG_CLICKED} from 'react-native-vivo-push';
 
-const TN_URL_01 = "http://101.231.204.84:8091/sim/getacptn";
+import Dialog from './Dialog';
 
 export default class App extends Component {
     constructor(props) {
         super(props);
         this.isMount = true;
-        this.initialize = this._initialize.bind(this);
+        this.init = this._init.bind(this);
         this.checkManifest = this._checkManifest.bind(this);
         this.turnOnPush = this._turnOnPush.bind(this);
         this.turnOffPush = this._turnOffPush.bind(this);
@@ -42,7 +42,60 @@ export default class App extends Component {
         if (typeof msg == "string") {
             text = msg;
         } else {
-            text = JSON.stringify(msg)
+            text = JSON.stringify(msg);
+            if (msg.type != null) {
+                let {data, state, type} = msg;
+                switch(type) {
+                    case VT_RECEIVE_REG_ID:
+                        text = "registerId：" + data;
+                        break;
+                    case VT_TURN_ON_PUSH:
+                        if (state != 0) {
+                            text = "打开push异常[" + state + "]";
+                        } else {
+                            text = "打开push成功";
+                        }
+                        break;
+                    case VT_TURN_OFF_PUSH: 
+                        if (state != 0) {
+                            text = "关闭push异常[" + state + "]";
+                        } else {
+                            text = "关闭push成功";
+                        }
+                        break;
+                    case VT_BIND_ALIAS:
+                        if (state != 0) {
+                            text = "设置别名异常[" + state + "]";
+                        } else {
+                            text = "设置别名成功";
+                        }
+                        break;
+                    case VT_UN_BIND_ALIAS:
+                        if (state != 0) {
+                            text = "取消别名异常[" + state + "]";
+                        } else {
+                            text = "取消别名成功";
+                        }
+                        break;
+                    case VT_SET_TOPIC:
+                        if (state != 0) {
+                            text = "设置标签异常[" + state + "]";
+                        } else {
+                            text = "设置标签成功";
+                        }
+                        break;
+                    case VT_DEL_TOPIC:
+                        if (state != 0) {
+                            text = "删除标签异常[" + state + "]";
+                        } else {
+                            text = "删除标签成功";
+                        }
+                        break;
+                    case VT_MSG_CLICKED:
+                        text = "点击了通知：\n" + JSON.stringify(JSON.parse(data), null, 4);
+                        break;
+                }
+            }
         }
         this._list && this._list.addLog(text);
     }
@@ -51,13 +104,13 @@ export default class App extends Component {
         this._list && this._list.clear();
     }
 
-    _initialize() {
-        VivoPush.initialize();
+    _init() {
+        VivoPush.init();
     }
 
     _checkManifest() {
         VivoPush.checkManifest().then(data => {
-            this.showLog(data);
+            this.showLog("AndroidManifest.xml 配置正确");
         }).catch(error => {
             this.showLog(error.message);
         });
@@ -73,50 +126,102 @@ export default class App extends Component {
 
     _getRegId() {
         VivoPush.getRegId().then(data => {
-            this.showLog(data);
+            this.showLog("registerId：" + data);
+        }).catch(error => {
+            this.showLog(error.message);
         });
     }
 
     _bindAlias() {
-        VivoPush.bindAlias("alias");
+        this._dialog && this._dialog.show({
+            key: "alias",
+            btnText: "设置别名",
+            placeholder: "请输入别名",
+            callback: text => {
+                if (text == null || text.trim().length == 0) {
+                    ToastAndroid.showWithGravity('请填写别名', ToastAndroid.SHORT, ToastAndroid.CENTER);
+                    return;
+                }
+                VivoPush.bindAlias(text);
+            }
+        });
     }
 
     _unBindAlias() {
-        VivoPush.unBindAlias("alias");
+        this._dialog && this._dialog.show({
+            key: "alias",
+            btnText: "取消别名",
+            placeholder: "请输入别名",
+            callback: text => {
+                if (text == null || text.trim().length == 0) {
+                    ToastAndroid.showWithGravity('请填写别名', ToastAndroid.SHORT, ToastAndroid.CENTER);
+                    return;
+                }
+                VivoPush.unBindAlias(text);
+            }
+        });
     }
 
     _getAlias() {
         VivoPush.getAlias().then(data => {
             this.showLog(data);
+        }).catch(error => {
+            this.showLog(error.message);
         });
     }
 
     _setTopic() {
-        VivoPush.setTopic("topic");
+        this._dialog && this._dialog.show({
+            key: "alias",
+            btnText: "设置标签",
+            placeholder: "请输入标签",
+            callback: text => {
+                if (text == null || text.trim().length == 0) {
+                    ToastAndroid.showWithGravity('请填写标签', ToastAndroid.SHORT, ToastAndroid.CENTER);
+                    return;
+                }
+                VivoPush.setTopic(text);
+            }
+        });
     }
 
     _delTopic() {
-        VivoPush.delTopic("topic");
+        this._dialog && this._dialog.show({
+            key: "alias",
+            btnText: "删除标签",
+            placeholder: "请输入标签",
+            callback: text => {
+                if (text == null || text.trim().length == 0) {
+                    ToastAndroid.showWithGravity('请填写标签', ToastAndroid.SHORT, ToastAndroid.CENTER);
+                    return;
+                }
+                VivoPush.delTopic(text);
+            }
+        });
     }
 
     _getTopics() {
         VivoPush.getTopics().then(data => {
-            this.showLog(data);
+            if (data == null || data.length == 0) {
+                this.showLog("没有标签");
+                return;
+            }
+            this.showLog("标签：" + data.join("，"));
         });
     }
 
     _isSupport() {
         VivoPush.isSupport().then(data => {
-            this.showLog(data);
+            this.showLog("当前系统是否支持PUSH服务：" + (data ? "支持" : "不支持"));
         });
     }
 
     render() {
         let key = 0;
         let views = [
-            <TouchableHighlight key={key ++} style={styles.touchableHighlight} onPress={this.initialize}>
+            <TouchableHighlight key={key ++} style={styles.touchableHighlight} onPress={this.init}>
                 <View style={styles.btn}>
-                    <Text style={styles.btnText}>initialize</Text>
+                    <Text style={styles.btnText}>init</Text>
                 </View>
             </TouchableHighlight>,
             <TouchableHighlight key={key ++} style={styles.touchableHighlight} onPress={this.checkManifest}>
@@ -192,6 +297,7 @@ export default class App extends Component {
                     <Text style={styles.logText}>控制台：</Text>
                     <ResultView ref={ele => this._list = ele} />
                 </View>
+                <Dialog ref={ele => this._dialog = ele} />
             </SafeAreaView>
         );
     } 
