@@ -47,7 +47,8 @@ $ react-native link react-native-vivo-push
 ## 使用
 
 ```javascript
-import { VivoPush,
+import {
+    VivoPush,
     VivoPushEmitter,
     VT_RECEIVE_REG_ID,
     VT_TURN_ON_PUSH,
@@ -56,7 +57,8 @@ import { VivoPush,
     VT_UN_BIND_ALIAS,
     VT_SET_TOPIC,
     VT_DEL_TOPIC,
-    VT_MSG_CLICKED } from "react-native-vivo-push";
+    VT_MSG_CLICKED
+} from "react-native-vivo-push";
 ```
 
 ## API 和使用示例
@@ -73,8 +75,8 @@ import { VivoPush,
   - [delTopic](#delTopic)
   - [getTopics](#getTopics)
   - [isSupport](#isSupport)
-  - [constants](#constants)
-  - [VivoPushEmitter](#VivoPushEmitter)
+  - [constants 常量](#constants)
+  - [VivoPushEmitter 事件订阅](#VivoPushEmitter)
 
 ### `init`
 
