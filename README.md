@@ -6,7 +6,7 @@
 
 react-native-vivo-push 使用 [Android PUSH-SDK API接口文档（2.9.0版本）](https://dev.vivo.com.cn/documentCenter/doc/364)
 
-vivo推送是vivo公司向开发者提供的消息推送服务，通过在云端与客户端之间建立一条稳定、可靠的长连接，为开发者提供向客户端应用实时推送消息的服务，支持百亿级的通知/消息推送，秒级触达移动用户。。
+vivo推送是vivo公司向开发者提供的消息推送服务，通过在云端与客户端之间建立一条稳定、可靠的长连接，为开发者提供向客户端应用实时推送消息的服务，支持百亿级的通知/消息推送，秒级触达移动用户。
 
 ## 安装
 
@@ -20,7 +20,7 @@ $ yarn add react-native-vivo-push
 
 [CLI autolink feature](https://github.com/react-native-community/cli/blob/master/docs/autolinking.md) 在构建应用时已自动链接此模块。 
 
-- **React Native <= 0.59**
+- **React Native < 0.60**
 
 ```bash
 $ react-native link react-native-vivo-push
@@ -351,64 +351,62 @@ export default class App extends Component {
         VivoPushEmitter.removeListener('Vivo_Push_Response', this.onVivoPushListener);
     }
     
-    _onVivoPushListener(data) {
+    _onVivoPushListener(event) {
         let text;
-        if (typeof msg == "string") {
-            text = msg;
+        if (typeof event == "string") {
+            text = event;
         } else {
-            text = JSON.stringify(msg);
-            if (msg.type != null) {
-                let {data, state, type} = msg;
-                switch(type) {
-                    case VT_RECEIVE_REG_ID:
-                        text = "registerId：" + data;
-                        break;
-                    case VT_TURN_ON_PUSH:
-                        if (state != 0) {
-                            text = "打开push异常[" + state + "]";
-                        } else {
-                            text = "打开push成功";
-                        }
-                        break;
-                    case VT_TURN_OFF_PUSH: 
-                        if (state != 0) {
-                            text = "关闭push异常[" + state + "]";
-                        } else {
-                            text = "关闭push成功";
-                        }
-                        break;
-                    case VT_BIND_ALIAS:
-                        if (state != 0) {
-                            text = "设置别名异常[" + state + "]";
-                        } else {
-                            text = "设置别名成功";
-                        }
-                        break;
-                    case VT_UN_BIND_ALIAS:
-                        if (state != 0) {
-                            text = "取消别名异常[" + state + "]";
-                        } else {
-                            text = "取消别名成功";
-                        }
-                        break;
-                    case VT_SET_TOPIC:
-                        if (state != 0) {
-                            text = "设置标签异常[" + state + "]";
-                        } else {
-                            text = "设置标签成功";
-                        }
-                        break;
-                    case VT_DEL_TOPIC:
-                        if (state != 0) {
-                            text = "删除标签异常[" + state + "]";
-                        } else {
-                            text = "删除标签成功";
-                        }
-                        break;
-                    case VT_MSG_CLICKED:
-                        text = "点击了通知：\n" + JSON.stringify(JSON.parse(data), null, 4);
-                        break;
-                }
+            text = JSON.stringify(event);
+            let {data, state, type} = event;
+            switch(type) {
+                case VT_RECEIVE_REG_ID:
+                    text = "registerId：" + data;
+                    break;
+                case VT_TURN_ON_PUSH:
+                    if (state != 0) {
+                        text = "打开push异常[" + state + "]";
+                    } else {
+                        text = "打开push成功";
+                    }
+                    break;
+                case VT_TURN_OFF_PUSH:
+                    if (state != 0) {
+                        text = "关闭push异常[" + state + "]";
+                    } else {
+                        text = "关闭push成功";
+                    }
+                    break;
+                case VT_BIND_ALIAS:
+                    if (state != 0) {
+                        text = "设置别名异常[" + state + "]";
+                    } else {
+                        text = "设置别名成功";
+                    }
+                    break;
+                case VT_UN_BIND_ALIAS:
+                    if (state != 0) {
+                        text = "取消别名异常[" + state + "]";
+                    } else {
+                        text = "取消别名成功";
+                    }
+                    break;
+                case VT_SET_TOPIC:
+                    if (state != 0) {
+                        text = "设置标签异常[" + state + "]";
+                    } else {
+                        text = "设置标签成功";
+                    }
+                    break;
+                case VT_DEL_TOPIC:
+                    if (state != 0) {
+                        text = "删除标签异常[" + state + "]";
+                    } else {
+                        text = "删除标签成功";
+                    }
+                    break;
+                case VT_MSG_CLICKED:
+                    text = "点击了通知：\n" + JSON.stringify(JSON.parse(data), null, 4);
+                    break;
             }
         }
         console.log(text);
@@ -420,6 +418,6 @@ export default class App extends Component {
 
 - Demo 代码参考 [example](https://github.com/caipeiming/react-native-vivo-push/tree/master/example)
 
-修改 `AndroidManifest.xml` 的 `com.vivo.push.api_key` 和 `com.vivo.push.app_id`，为您的应用在 vivo 推送平台申请的 `app_key` 和 `app_id`。
+修改 `AndroidManifest.xml` 的 `com.vivo.push.api_key` 和 `com.vivo.push.app_id`，为您的应用在 vivo 推送平台申请的 `api_key` 和 `app_id`。
 
 - 安卓手机也可以直接下载并安装已编译的 [apk](https://github.com/caipeiming/react-native-vivo-push/releases)

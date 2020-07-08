@@ -57,23 +57,25 @@ public class RNVivoPushModule extends ReactContextBaseJavaModule {
         final LocalBroadcastManager mgr = LocalBroadcastManager.getInstance(reactContext);
         LifecycleEventListener listener = new LifecycleEventListener() {
             public void onHostResume() {
-                Log.e(TAG, "onHostResume");
+                showLog("onHostResume");
                 mgr.registerReceiver(receiver, new IntentFilter("vivo_push"));
             }
+
             public void onHostPause() {
-                Log.e(TAG, "onHostPause");
+                showLog("onHostPause");
                 try {
                     mgr.unregisterReceiver(receiver);
                 } catch (java.lang.IllegalArgumentException e) {
-                    Log.e(TAG, "receiver not registered", e);
+                    showLog("receiver not registered\n" + e.getMessage());
                 }
             }
+
             public void onHostDestroy() {
-                Log.e(TAG, "onHostDestroy");
+                showLog("onHostDestroy");
                 try {
                     mgr.unregisterReceiver(receiver);
                 } catch (java.lang.IllegalArgumentException e) {
-                    Log.e(TAG, "receiver not registered", e);
+                    showLog("receiver not registered" + e.getMessage());
                 }
             }
         };
@@ -141,7 +143,7 @@ public class RNVivoPushModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getRegId(Promise promise) {
         String regId = PushClient.getInstance(this.reactContext).getRegId();
-        if (regId == null || regId.isEmpty()){
+        if (regId == null || regId.isEmpty()) {
             promise.reject("1", "获取 regId 失败");
             return;
         }

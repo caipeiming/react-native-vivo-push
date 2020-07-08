@@ -37,64 +37,62 @@ export default class App extends Component {
         this.showLog(data);
     }
 
-    showLog(msg) {
+    showLog(event) {
         let text;
-        if (typeof msg == "string") {
-            text = msg;
+        if (typeof event == "string") {
+            text = event;
         } else {
-            text = JSON.stringify(msg);
-            if (msg.type != null) {
-                let {data, state, type} = msg;
-                switch(type) {
-                    case VT_RECEIVE_REG_ID:
-                        text = "registerId：" + data;
-                        break;
-                    case VT_TURN_ON_PUSH:
-                        if (state != 0) {
-                            text = "打开push异常[" + state + "]";
-                        } else {
-                            text = "打开push成功";
-                        }
-                        break;
-                    case VT_TURN_OFF_PUSH: 
-                        if (state != 0) {
-                            text = "关闭push异常[" + state + "]";
-                        } else {
-                            text = "关闭push成功";
-                        }
-                        break;
-                    case VT_BIND_ALIAS:
-                        if (state != 0) {
-                            text = "设置别名异常[" + state + "]";
-                        } else {
-                            text = "设置别名成功";
-                        }
-                        break;
-                    case VT_UN_BIND_ALIAS:
-                        if (state != 0) {
-                            text = "取消别名异常[" + state + "]";
-                        } else {
-                            text = "取消别名成功";
-                        }
-                        break;
-                    case VT_SET_TOPIC:
-                        if (state != 0) {
-                            text = "设置标签异常[" + state + "]";
-                        } else {
-                            text = "设置标签成功";
-                        }
-                        break;
-                    case VT_DEL_TOPIC:
-                        if (state != 0) {
-                            text = "删除标签异常[" + state + "]";
-                        } else {
-                            text = "删除标签成功";
-                        }
-                        break;
-                    case VT_MSG_CLICKED:
-                        text = "点击了通知：\n" + JSON.stringify(JSON.parse(data), null, 4);
-                        break;
-                }
+            text = JSON.stringify(event);
+            let {data, state, type} = event;
+            switch(type) {
+                case VT_RECEIVE_REG_ID:
+                    text = "registerId：" + data;
+                    break;
+                case VT_TURN_ON_PUSH:
+                    if (state != 0) {
+                        text = "打开push异常[" + state + "]";
+                    } else {
+                        text = "打开push成功";
+                    }
+                    break;
+                case VT_TURN_OFF_PUSH:
+                    if (state != 0) {
+                        text = "关闭push异常[" + state + "]";
+                    } else {
+                        text = "关闭push成功";
+                    }
+                    break;
+                case VT_BIND_ALIAS:
+                    if (state != 0) {
+                        text = "设置别名异常[" + state + "]";
+                    } else {
+                        text = "设置别名成功";
+                    }
+                    break;
+                case VT_UN_BIND_ALIAS:
+                    if (state != 0) {
+                        text = "取消别名异常[" + state + "]";
+                    } else {
+                        text = "取消别名成功";
+                    }
+                    break;
+                case VT_SET_TOPIC:
+                    if (state != 0) {
+                        text = "设置标签异常[" + state + "]";
+                    } else {
+                        text = "设置标签成功";
+                    }
+                    break;
+                case VT_DEL_TOPIC:
+                    if (state != 0) {
+                        text = "删除标签异常[" + state + "]";
+                    } else {
+                        text = "删除标签成功";
+                    }
+                    break;
+                case VT_MSG_CLICKED:
+                    text = "点击了通知：\n" + JSON.stringify(JSON.parse(data), null, 4);
+                    break;
             }
         }
         this._list && this._list.addLog(text);

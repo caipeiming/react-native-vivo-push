@@ -129,7 +129,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.jisong.o2o.merchant"
+        applicationId "top.cpming.rn.vivo"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

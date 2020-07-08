@@ -43,7 +43,7 @@ public class PushMessageReceiverImpl extends OpenClientPushMessageReceiver {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.e(TAG, json.toString());
+//        Log.e(TAG, json.toString());
         Bundle bundle = new Bundle();
         bundle.putString("data", json.toString());
         broadcastMessage(context, RNVivoPushModule.VT_MSG_CLICKED, bundle);
@@ -52,7 +52,7 @@ public class PushMessageReceiverImpl extends OpenClientPushMessageReceiver {
     @Override
     public void onReceiveRegId(Context context, String regId) {
         String responseString = "onReceiveRegId regId = " + regId;
-        Log.e(TAG, responseString);
+//        Log.e(TAG, responseString);
         Bundle bundle = new Bundle();
         bundle.putString("data", regId);
         broadcastMessage(context, RNVivoPushModule.VT_RECEIVE_REG_ID, bundle);
