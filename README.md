@@ -416,8 +416,6 @@ export default class App extends Component {
 
 ## Demo
 
-- Demo 代码参考 [example](https://github.com/caipeiming/react-native-vivo-push/tree/master/example)
+Demo 代码参考 [example](https://github.com/caipeiming/react-native-vivo-push/tree/master/example)
 
 修改 `AndroidManifest.xml` 的 `com.vivo.push.api_key` 和 `com.vivo.push.app_id`，为您的应用在 vivo 推送平台申请的 `api_key` 和 `app_id`。
-
-- 安卓手机也可以直接下载并安装已编译的 [apk](https://github.com/caipeiming/react-native-vivo-push/releases)
